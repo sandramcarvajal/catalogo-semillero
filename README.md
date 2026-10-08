@@ -1,27 +1,159 @@
-# CatalogoSemillero
+# Catálogo Semillero
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.17.
+Proyecto desarrollado como parte del **Semillero de Desarrollo Web de WPOSS**, utilizando Angular 17.
 
-## Development server
+Este repositorio corresponde al **Módulo 01 – Componentes en Angular**, donde se implementa un catálogo de productos con diferentes vistas según el rol del usuario.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Tecnologías
 
-## Code scaffolding
+* Angular 17.3.17
+* TypeScript
+* HTML
+* CSS
+* Angular Signals
+* Git y GitHub
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Requisitos
 
-## Build
+Antes de ejecutar el proyecto se requiere tener instalado:
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+* Node.js 20 LTS o superior
+* npm
+* Angular CLI 17
 
-## Running unit tests
+Para verificar las versiones:
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```bash
+node --version
+npm --version
+ng version
+```
 
-## Running end-to-end tests
+## Instalación
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+Clonar el repositorio:
 
-## Further help
+```bash
+git clone https://github.com/sandramcarvajal/catalogo-semillero.git
+```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Ingresar al proyecto:
+
+```bash
+cd catalogo-semillero
+```
+
+Instalar las dependencias:
+
+```bash
+npm install
+```
+
+## Servidor de desarrollo
+
+Ejecutar:
+
+```bash
+ng serve
+```
+
+Luego abrir en el navegador:
+
+```text
+http://localhost:4200/
+```
+
+La aplicación se recarga automáticamente cuando se realizan cambios en los archivos del proyecto.
+
+## Funcionalidades del Módulo 01
+
+El proyecto implementa un catálogo de productos con:
+
+* Vista de cliente mediante tarjetas de productos.
+* Vista de administrador mediante tabla de productos.
+* Cambio de rol entre administrador y cliente.
+* Filtro de productos por categoría.
+* Mensaje cuando no existen productos para la categoría seleccionada.
+* Visualización del estado "Agotado".
+* Botón para agregar productos al carrito.
+* Contador de productos agregados al carrito.
+* Cálculo del total del carrito.
+* Acciones de editar y eliminar productos en la vista administrativa.
+
+## Componentes principales
+
+### `TarjetaProductoComponent`
+
+Componente reutilizable encargado de mostrar la información de un producto.
+
+Utiliza:
+
+* `@Input({ required: true })` para recibir el producto.
+* `@Output()` y `EventEmitter` para comunicar la acción de agregar al carrito.
+* `*ngIf` para mostrar el estado "Agotado".
+* `[disabled]` para deshabilitar el botón cuando el producto no tiene stock.
+
+La tarjeta no administra el carrito ni conoce el origen de los datos. Solo recibe un producto y comunica las acciones al componente padre.
+
+### `TablaProductosComponent`
+
+Componente encargado de mostrar los productos en una tabla para la vista administrativa.
+
+Utiliza:
+
+* `@Input({ required: true })` para recibir la lista de productos.
+* `@Output()` para emitir las acciones de editar y eliminar.
+* `*ngFor` para recorrer los productos.
+* `trackBy` utilizando el identificador del producto.
+* `*ngIf` para mostrar un mensaje cuando la lista está vacía.
+
+### `CatalogoPageComponent`
+
+Es el componente principal del catálogo y mantiene el estado de la aplicación.
+
+Utiliza:
+
+* `signal()` para almacenar los productos.
+* `signal()` para controlar el rol actual.
+* `signal()` para almacenar la categoría seleccionada.
+* `computed()` para obtener los productos filtrados.
+* `computed()` para calcular la cantidad y el total del carrito.
+* `*ngSwitch` para cambiar entre la vista administrativa y la vista de cliente.
+
+## Manejo de estado
+
+Los datos principales del catálogo se mantienen mediante Angular Signals.
+
+Los valores derivados se calculan mediante `computed()`. Por ejemplo, los productos filtrados se obtienen a partir de la lista de productos y la categoría seleccionada, evitando mantener un estado duplicado.
+
+## Estructura principal
+
+```text
+src/
+└── app/
+    ├── catalogo-page/
+    ├── models/
+    │   └── producto.ts
+    ├── tabla-productos/
+    └── tarjeta-producto/
+```
+
+Las imágenes utilizadas por los productos se encuentran en:
+
+```text
+src/assets/images/
+```
+
+## Verificación del proyecto
+
+Para comprobar que el proyecto compila correctamente:
+
+```bash
+ng build
+```
+
+La compilación debe finalizar sin errores.
+
+## Rama del módulo
+
+El desarrollo del Módulo 0
