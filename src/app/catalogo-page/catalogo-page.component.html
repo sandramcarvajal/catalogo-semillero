@@ -1,0 +1,53 @@
+<h1>Catálogo de Productos</h1>
+
+<p>Rol actual: {{ rol() }}</p>
+<button type="button" (click)="cambiarRol()">Cambiar Rol</button>
+
+<label for="categoria">Filtrar por categoría:</label>
+
+<select id="categoria"
+    [value]="categoriaSeleccionada()"
+    (change)="categoriaSeleccionada.set($any($event.target).value)">
+    <option value="Todas">Todas</option>
+    <option *ngFor="let categoria of categorias" [value]="categoria">
+        {{ categoria }}
+    </option>
+</select>
+
+<div class ="carrito-resumen">
+    <p>Productos en el carrito: {{ cantidadCarrito() }}</p>
+    <p>Total: ${{ totalCarrito()}}</p>
+</div>
+
+<div [ngSwitch]="rol()">
+
+    <section *ngSwitchCase="'admin'">
+        <h2>Vista de Administrador</h2>
+
+        <app-tabla-productos 
+            [productos]="productos()"
+            (editar)="editarProducto($event)"
+            (eliminar)="eliminarProducto($event)">
+        
+        </app-tabla-productos>
+
+    </section>
+
+    <section *ngSwitchCase="'customer'">
+        <h2>Catálogo para Cliente</h2>
+
+        <div class="productos-grid">
+
+            <app-tarjeta-producto 
+                *ngFor="let producto of productosFiltrados(); trackBy: trackById"
+                [producto]="producto"
+                (agregarAlCarrito)="agregarAlCarrito($event)">
+            </app-tarjeta-producto>
+        </div>
+
+        <p *ngIf="productosFiltrados().length === 0">
+            No hay productos disponibles en esta categoría.
+        </p>
+    </section>
+
+</div>

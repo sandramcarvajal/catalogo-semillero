@@ -1,0 +1,103 @@
+.tarjeta {
+    background-color: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s ease;
+}
+
+.tarjeta:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tarjeta img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.tarjeta h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.tarjeta p {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 8px;
+}
+
+.tarjeta .precio {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #10b981;
+    margin-bottom: 8px;
+}
+
+.tarjeta button {
+    background-color: #10b981;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.tarjeta button:hover {
+    background-color: #059669;
+}
+
+.tarjeta button:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.tarjeta span {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.precio {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #10b981;
+    margin-bottom: 8px;
+}
+
+.precio span {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.precio .precio-actual {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #10b981;
+}
+
+.tabla-contenedor {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
+thead {
+    background-color: #f8fafc;
+}
+
+th {
+    padding: auto;
+}

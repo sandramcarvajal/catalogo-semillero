@@ -1,0 +1,83 @@
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tarjeta:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.tarjeta img {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.tarjeta h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: #1f2937;
+  line-height: 1.4;
+}
+
+.tarjeta p {
+  margin: 6px 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.tarjeta span {
+  display: inline-block;
+  align-self: flex-start;
+  margin-top: 8px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tarjeta button {
+  width: auto;
+  align-self: center;
+  
+  margin-top: auto;
+  padding: 10px 14px;
+
+  border: none;
+  border-radius: 8px;
+
+  background-color: #2563eb;
+  color: white;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.tarjeta button:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.tarjeta button:disabled {
+  background-color: #d1d5db;
+  color: #6b7280;
+  cursor: not-allowed;
+}

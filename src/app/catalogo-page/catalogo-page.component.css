@@ -1,0 +1,128 @@
+.catalogo {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+}
+
+h1 {
+    margin: 0 0 8px;
+    font-size: 32px;
+    color: #1f2937;
+}
+
+h2 {
+    margin-top: 32px;
+    color: #374151;
+}
+
+p {
+    color: #6b7280;
+}
+
+.encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.encabezado button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.encabezado button:hover {
+    background-color: #2563eb;
+}
+
+.filtros {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.filtros label {
+    font-weight: bold;
+    color: #374151;
+}
+
+.filtros select {
+    padding: 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    background-color: white;
+    color: #374151;
+}
+
+.carrito-resumen {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 32px;
+    padding: 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    background-color: #f9fafb;
+}
+
+.carrito-resumen p {
+    margin: 0;
+    color: #374151;
+}
+
+.productos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    align-items: stretch;
+}
+
+.mensaje-vacio {
+    padding: 16px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 18px;
+    background-color: #f9fafb;
+    border: 1px solid #d1d5db;
+    margin-top: 32px;
+}
+
+@media (max-width: 480px) {
+    .producto-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .catalogo {
+        padding: 20px 16px;
+    }
+
+    .encabezado {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filtros {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .producto-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .carrito-resumen {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+}
+
+

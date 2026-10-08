@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
+import { CatalogoPageComponent } from './catalogo-page/catalogo-page.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [],
+  imports: [CatalogoPageComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

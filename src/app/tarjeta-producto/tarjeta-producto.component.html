@@ -1,0 +1,21 @@
+<div class="tarjeta">
+    <img [src]="producto.images[0]" alt="{{ producto.title }}">
+
+    <h3>{{ producto.title }}</h3>
+
+    <p>Precio: ${{ producto.price }}</p>
+
+    <p>Categoría: {{ producto.category.name }}</p>
+
+    <span *ngIf="producto.stock === 0">
+        Agotado
+    </span>
+
+    <button 
+        type="button" 
+        [disabled]="producto.stock === 0"
+        (click)="agregarAlCarrito.emit(producto)"
+        >
+        Agregar al carrito
+    </button>
+</div>
