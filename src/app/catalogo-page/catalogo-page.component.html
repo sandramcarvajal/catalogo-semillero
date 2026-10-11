@@ -52,6 +52,71 @@
         {{ errorConsulta() || errorCarga() }}
       </p>
 
+      <section *ngIf="productoEnEdicion() as producto" class="formulario-edicion">
+        <h3>Editar producto</h3>
+
+        <form (submit)="guardarEdicion($event)">
+            <div class="campo-edicion campo-edicion--completo">
+                <label for="titulo">Nombre</label>
+                <input
+                    id="titulo"
+                    type="text"
+                    [value]="producto.title"
+                    (input)="actualizarCampoEdicion('title', $any($event.target).value)"
+                    required
+                />
+            </div>
+
+            <div class="campo-edicion">
+                <label for="precio">Precio</label>
+                <input
+                    id="precio"
+                    type="number"
+                    min="0"
+                    [value]="producto.price"
+                    (input)="actualizarCampoEdicion('price', $any($event.target).value)"
+                    required
+                />
+            </div>
+
+            <div class="campo-edicion">
+                <label for="stock">Stock</label>
+                <input
+                    id="stock"
+                    type="number"
+                    min="0"
+                    [value]="producto.stock"
+                    (input)="actualizarCampoEdicion('stock', $any($event.target).value)"
+                    required
+                />
+            </div>
+
+            <div class="campo-edicion campo-edicion--completo">
+                <label for="descripcion">Descripción</label>
+                <textarea
+                    id="descripcion"
+                    [value]="producto.description"
+                    (input)="actualizarCampoEdicion('description', $any($event.target).value)"
+                    required
+                ></textarea>
+            </div>
+
+            <div class="campo-edicion campo-edicion--completo acciones">
+                <button type="button" class="btn-cancelar" (click)="cancelarEdicion()">
+                    Cancelar
+                </button>
+
+                <button type="submit" class="btn-guardar" [disabled]="guardando()">
+                    {{ guardando() ? 'Guardando...' : 'Guardar' }}
+                </button>
+            </div>
+        </form>
+    </section>
+
+      <p *ngIf="mensajeOperacion() as op" role="status" class="mensaje-operacion" [class.error]="!op.exito">
+        {{ op.mensaje }}
+      </p>
+
       <ng-container *ngIf="productos$ | async as productos">
         <app-tabla-productos
           *ngIf="!cargando() && productos.length > 0"
@@ -65,7 +130,15 @@
           No hay productos disponibles.
         </p>
       </ng-container>
+
+      <ng-container *ngIf="eliminacionResultados$ | async as resultado">
+        <p role="status" [class.error]="!resultado.exito">
+            {{ resultado.mensaje }}
+        </p>
+      </ng-container>
     </section>
+
+    <ng-container *ngIf="actualizacionResultado$ | async"></ng-container>
 
     <section *ngSwitchCase="'customer'">
       <h2>Catálogo para Cliente</h2>
