@@ -1,8 +1,12 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Producto } from '../models/producto';
 import { CommonModule } from '@angular/common';
 import { TarjetaProductoComponent } from '../tarjeta-producto/tarjeta-producto.component';
 import { TablaProductosComponent } from '../tabla-productos/tabla-productos.component';
+import { ProductoService } from '../services/producto.service';
+import { CategoriaService } from '../services/categoria.service';
+import { BehaviorSubject, catchError, finalize, of, shareReplay, switchMap } from 'rxjs';
+import { CarritoService } from '../services/carrito.service';
 
 @Component({
   selector: 'app-catalogo-page',
@@ -16,128 +20,90 @@ import { TablaProductosComponent } from '../tabla-productos/tabla-productos.comp
   styleUrl: './catalogo-page.component.css'
 })
 export class CatalogoPageComponent {
-  productos = signal<Producto[]>([
-    {
-      id: 1,
-      title: 'Laptop HP Pavilion 15',
-      price: 2499900,
-      description: 'Laptop con procesador Intel Core i5, 8GB de RAM y 256GB de almacenamiento',
-      images: ['assets/images/laptop1.png'],
-      stock: 0,
-      category: {
-        id: 1,
-        name: 'Computadoras'
-      }
-    },
-    {
-      id: 2,
-      title: 'Audifonos',
-      price: 85000,
-      description: 'Audifonos inalambricos con cancelacion de ruido',
-      images: ['assets/images/audifonos1.png'],
-      stock: 15,
-      category: {
-        id: 2,
-        name: 'Accesorios'
-      }
-    },
-    {
-      id: 3,
-      title: 'Smartphone Samsung Galaxy S21',
-      price: 1999900,
-      description: 'Smartphone con pantalla AMOLED de 6.2 pulgadas, cámara triple y batería de 4000 mAh',
-      images: ['assets/images/smartphone1.png'],
-      stock: 5,
-      category: {
-        id: 3,
-        name: 'Celulares'
-      }
-    },
-    {
-      id: 4,
-      title: 'Tablet Apple iPad Air',
-      price: 2999900,
-      description: 'Tablet con pantalla Retina de 10.9 pulgadas, chip A14 Bionic y compatibilidad con Apple Pencil',
-      images: ['assets/images/tablet1.png'],
-      stock: 8,
-      category: {
-        id: 4,
-        name: 'Tablets'
-      }
-    },
-    {
-      id: 5,
-      title: 'Smartwatch Garmin Forerunner 245',
-      price: 1299900,
-      description: 'Smartwatch con GPS, monitor de frecuencia cardíaca y seguimiento de actividad física',  
-    images: ['assets/images/smartwatch1.png'],
-      stock: 12,
-      category: {
-        id: 5,
-        name: 'Relojes inteligentes'
-      }
-    },
-    {
-      id: 6,
-      title: 'Cámara Canon EOS Rebel T7',
-      price: 1499900,
-      description: 'Cámara réflex digital con sensor de 24.1 megapíxeles, grabación de video Full HD y conectividad Wi-Fi',
-      images: ['assets/images/camara1.png'],
-      stock: 6,
-      category: {
-        id: 6,
-        name: 'Cámaras'
-      }
-    }
-  ]);
+  private productoService = inject(ProductoService);
+  private categoriaService = inject(CategoriaService);
+  private carritoService = inject(CarritoService);
 
-     rol = signal<'admin' | 'customer'>('customer');
-  cambiarRol() {
-    this.rol.set(this.rol() === 'admin' ? 'customer' : 'admin');
+      // Estado de la pantalla
+    rol = signal<'admin' | 'customer'>('customer');
+    cargando = signal(true);
+    errorConsulta = signal<string | null>(null);
+    errorCategorias = signal<string | null>(null);
+
+  // Categorias consultadas desde la API
+    categorias$ = this.categoriaService.obtenerTodas().pipe (
+      catchError((error) => {
+        console.error('Errror al cargar categorias', error);
+        this.errorCategorias.set('No fue posible cargar la categorias');
+        return of([]);
+      }),
+      shareReplay(1)
+    );
+
+    // Muestra todas las categorias
+    categoriaSeleccionada = signal<number | null>(null);
+    private categoriaSeleccionada$ =
+      new BehaviorSubject<number | null>(null);
+
+    
+    // Productos consultados desde la API
+    productos$ = this.categoriaSeleccionada$.pipe (
+      switchMap((categoriaId) => {
+        this.cargando.set(true);
+        this.errorConsulta.set(null);
+
+        const peticion$ = categoriaId === null
+          ? this.productoService.obtenerTodos()
+          : this.productoService.obtenerPorCategoria(categoriaId);
+
+        return peticion$.pipe (
+          catchError((error) => {
+            console.error('Error al consultar productos', error);
+            this.errorConsulta.set(
+              'No fue posible consultar los productos. Intenta nuevamente.'
+            );
+            return of([]);
+        }),
+        finalize(() => this.cargando.set(false))
+      );
+    }),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+      
+  // El servicio conserva el mensaje de error de obtenerTodos()
+  errorCarga = this.productoService.errorCarga;
+
+  cambiarRol(): void {
+    this.rol.set(
+      this.rol() === 'admin' ? 'customer' : 'admin'
+    );
+  }
+
+  cambiarCategoria(valor: string): void {
+    const id = valor === '' ? null : Number(valor);
+
+    this.categoriaSeleccionada.set(id);
+    this.categoriaSeleccionada$.next(id);
   }
 
   trackById(index: number, producto: Producto): number {
     return producto.id;
   }
 
-  categoriaSeleccionada = signal<string>('Todas');
+    //Carrito
+  carrito = this.carritoService.carrito;
+  cantidadCarrito = this.carritoService.cantidad;
+  totalCarrito = this.carritoService.total;
 
-  productosFiltrados = computed(() => {
-    if (this.categoriaSeleccionada() === 'Todas') {
-      return this.productos();
-    } else {
-      return this.productos().filter(producto => producto.category.name === 
-        this.categoriaSeleccionada());
-    }
-  });
+  agregarAlCarrito(producto: Producto): void {
+    this.carritoService.agregar(producto);
+  }
 
-  carrito = signal<Producto[]>([]);
-  cantidadCarrito = computed(() => this.carrito().length);
-  totalCarrito = computed(() => this.carrito().reduce((total, producto) => 
-    total + producto.price, 0));
-
-  agregarAlCarrito(producto: Producto) {
-    const carritoActual = this.carrito();
-    
-      this.carrito.set([...carritoActual, producto]);
-    }
-
-    categorias = [
-      'Computadoras',
-      'Accesorios',
-      'Celulares',
-      'Tablets',
-      'Relojes inteligentes',
-      'Cámeras'
-    ];
-
-  editarProducto(producto: Producto) {
+  editarProducto(producto: Producto): void {
     console.log('Editar producto:', producto);
   }
 
-  eliminarProducto(producto: Producto) {
-    this.productos.update(productos => 
-      productos.filter(p => p.id !== producto.id)
-    );
+  eliminarProducto(producto: Producto): void {
+    console.log('Eliminar producto:', producto);
   }
 }

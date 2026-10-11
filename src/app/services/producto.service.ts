@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { catchError, Observable, of } from 'rxjs';
 import { Producto } from '../models/producto';
 import { environment } from '../../environments/environment';
@@ -11,12 +11,19 @@ export class ProductoService {
 
   private http = inject(HttpClient)
   private apiUrl = `${environment.apiUrl}/products`;
+  private _errorCarga = signal<string | null>(null);
 
   // Método para consultar todos los productos
   obtenerTodos(): Observable<Producto[]> {
+    this._errorCarga.set(null);
+
     return this.http.get<Producto[]>(this.apiUrl).pipe(
       catchError((error) => {
         console.error('Error al cargar productos', error);
+
+        this._errorCarga.set(
+          'No fue posible cargar los productos. Intenta nuevamente.'
+        );
         return of([]);
       })
     );
@@ -49,5 +56,15 @@ export class ProductoService {
       `${this.apiUrl}/${id}`
     );
   }
+
+  // Consultar por cateegoria ID
+  obtenerPorCategoria(id: number): Observable<Producto[]> {
+    return this.http.get<Producto[]>(
+      `${this.apiUrl}/?categoryId=${id}`
+    );
+  }
+
+  // Manejo de error
+  errorCarga = this._errorCarga.asReadonly();
  
 }

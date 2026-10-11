@@ -1,53 +1,98 @@
-<h1>Catálogo de Productos</h1>
+<div class="catalogo">
+  <header class="encabezado">
+    <div class="encabezado-titulo">
+      <h1>Catálogo de Productos</h1>
+    </div>
 
-<p>Rol actual: {{ rol() }}</p>
-<button type="button" (click)="cambiarRol()">Cambiar Rol</button>
+    <div class="encabezado-acciones">
+      <span class="rol-badge">Rol: {{ rol() }}</span>
 
-<label for="categoria">Filtrar por categoría:</label>
+      <button type="button" (click)="cambiarRol()">
+        Cambiar Rol
+      </button>
+    </div>
+  </header>
 
-<select id="categoria"
-    [value]="categoriaSeleccionada()"
-    (change)="categoriaSeleccionada.set($any($event.target).value)">
-    <option value="Todas">Todas</option>
-    <option *ngFor="let categoria of categorias" [value]="categoria">
-        {{ categoria }}
-    </option>
-</select>
+  <div class="filtros">
+    <label for="categoria">Filtrar por categoría:</label>
 
-<div class ="carrito-resumen">
+    <select
+      id="categoria"
+      [value]="categoriaSeleccionada() ?? ''"
+      (change)="cambiarCategoria($any($event.target).value)"
+    >
+      <option value="">Todas las categorías</option>
+
+      <option
+        *ngFor="let categoria of categorias$ | async"
+        [value]="categoria.id"
+      >
+        {{ categoria.name }}
+      </option>
+    </select>
+  </div>
+
+  <p *ngIf="errorCategorias()">
+    {{ errorCategorias() }}
+  </p>
+
+  <div class="carrito-resumen">
     <p>Productos en el carrito: {{ cantidadCarrito() }}</p>
-    <p>Total: ${{ totalCarrito()}}</p>
-</div>
+    <p>Total: ${{ totalCarrito() }}</p>
+  </div>
 
-<div [ngSwitch]="rol()">
+  <div [ngSwitch]="rol()">
 
     <section *ngSwitchCase="'admin'">
-        <h2>Vista de Administrador</h2>
+      <h2>Vista de Administrador</h2>
 
-        <app-tabla-productos 
-            [productos]="productos()"
-            (editar)="editarProducto($event)"
-            (eliminar)="eliminarProducto($event)">
-        
-        </app-tabla-productos>
+      <p *ngIf="cargando()">Cargando productos...</p>
 
+      <p *ngIf="errorConsulta() || errorCarga()">
+        {{ errorConsulta() || errorCarga() }}
+      </p>
+
+      <ng-container *ngIf="productos$ | async as productos">
+        <app-tabla-productos
+          *ngIf="!cargando() && productos.length > 0"
+          [productos]="productos"
+          (editar)="editarProducto($event)"
+          (eliminar)="eliminarProducto($event)"
+        ></app-tabla-productos>
+
+        <p *ngIf="!cargando() && productos.length === 0
+                  && !errorConsulta() && !errorCarga()">
+          No hay productos disponibles.
+        </p>
+      </ng-container>
     </section>
 
     <section *ngSwitchCase="'customer'">
-        <h2>Catálogo para Cliente</h2>
+      <h2>Catálogo para Cliente</h2>
 
-        <div class="productos-grid">
+      <p *ngIf="cargando()">Cargando productos...</p>
 
-            <app-tarjeta-producto 
-                *ngFor="let producto of productosFiltrados(); trackBy: trackById"
-                [producto]="producto"
-                (agregarAlCarrito)="agregarAlCarrito($event)">
-            </app-tarjeta-producto>
+      <p *ngIf="errorConsulta() || errorCarga()">
+        {{ errorConsulta() || errorCarga() }}
+      </p>
+
+      <ng-container *ngIf="productos$ | async as productos">
+        <div
+          class="productos-grid"
+          *ngIf="!cargando() && productos.length > 0"
+        >
+          <app-tarjeta-producto
+            *ngFor="let producto of productos; trackBy: trackById"
+            [producto]="producto"
+            (agregarAlCarrito)="agregarAlCarrito($event)"
+          ></app-tarjeta-producto>
         </div>
 
-        <p *ngIf="productosFiltrados().length === 0">
-            No hay productos disponibles en esta categoría.
+        <p *ngIf="!cargando() && productos.length === 0
+                  && !errorConsulta() && !errorCarga()">
+          No hay productos disponibles en esta categoría.
         </p>
+      </ng-container>
     </section>
 
-</div>
+  </div>

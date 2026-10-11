@@ -1,3 +1,4 @@
+ <div class="tabla-contenedor">
  <table>
     <thead>
         <tr>
@@ -14,7 +15,17 @@
             <td>{{ producto.id }}</td>
 
             <td>
-                <img [src]="producto.images[0]" alt="{{ producto.title }}" width="50">
+                <img
+                    *ngIf="!imagenesConError.has(producto.id)"
+                    [src]="producto.images[0]"
+                    alt="{{ producto.title }}"
+                    width="50"
+                    (error)="onImageError(producto.id)"
+                >
+
+                <span *ngIf="imagenesConError.has(producto.id)">
+                    Sin imagen
+                </span>
             </td>
 
             <td>{{ producto.title }}</td>
@@ -39,6 +50,7 @@
         </tr>
     </tbody>
  </table>
+ </div>
 
  <p *ngIf="productos.length === 0">
     No hay productos disponibles.
