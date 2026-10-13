@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { catchError, Observable, of } from 'rxjs';
-import { Producto } from '../models/producto';
+import { Producto, CrearProducto } from '../models/producto';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -36,9 +36,10 @@ export class ProductoService {
   }
 
   // Método para crear un producto nuevo
-  crear(producto: Partial<Producto>): Observable<Producto> {
+  crear(producto: CrearProducto): Observable<Producto> {
     return this.http.post<Producto>(this.apiUrl, producto);
   }
+
 
   // Método para actualizar un producto
   actualizar(
@@ -51,8 +52,8 @@ export class ProductoService {
   }
   
   // Método para eliminar un producto
-  eliminar(id: number): Observable<boolean> {
-    return this.http.delete<boolean>(
+  eliminar(id: number): Observable<void> {
+    return this.http.delete<void>(
       `${this.apiUrl}/${id}`
     );
   }
