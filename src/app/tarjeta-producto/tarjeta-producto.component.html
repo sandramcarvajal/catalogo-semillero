@@ -1,14 +1,5 @@
 <div class="tarjeta">
-    <img
-        *ngIf="!imagenConError"
-        [src]="producto.images[0]"
-        alt="{{ producto.title }}"
-        (error)="onImageError()"
-    >
-
-    <p *ngIf="imagenConError" class="imagen-error">
-        Imagen no disponible
-    </p>
+    <img [src]="producto.images[0]" alt="{{ producto.title }}">
 
     <h3>{{ producto.title }}</h3>
 

@@ -17,12 +17,6 @@ export class TablaProductosComponent {
   @Output() editar = new EventEmitter<Producto>();
   @Output() eliminar = new EventEmitter<Producto>();
 
-  imagenesConError = new Set<number>();
-
-  onImageError(id: number): void {
-    this.imagenesConError = new Set(this.imagenesConError).add(id);
-  }
-
   trackById(index: number, producto: Producto): number {
     return producto.id;
   }

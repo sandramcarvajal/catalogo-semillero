@@ -12,12 +12,6 @@ import { CommonModule } from '@angular/common';
 export class TarjetaProductoComponent {
   @Input({ required: true }) producto!: Producto;
   @Output() agregarAlCarrito = new EventEmitter<Producto>();
-
-  imagenConError = false;
-
-  onImageError(): void {
-    this.imagenConError = true;
-  }
   
 
 }
