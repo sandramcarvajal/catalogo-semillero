@@ -2,15 +2,16 @@
 
 Proyecto desarrollado como parte del **Semillero de Desarrollo Web de WPOSS**, utilizando Angular 17.
 
-Este repositorio corresponde al **Módulo 01 – Componentes en Angular**, donde se implementa un catálogo de productos con diferentes vistas según el rol del usuario.
+Este repositorio corresponde al **Módulo 02 — Servicios, inyección de dependencias y HttpClient**. El catálogo ya no trabaja con datos locales: consume la **Platzi Fake Store API (EscuelaJS)** a través de servicios, con inyección de dependencias, observables y el pipe `async`.
 
 ## Tecnologías
 
 * Angular 17.3.17
 * TypeScript
-* HTML
-* CSS
+* RxJS (Observables, `pipe async`)
 * Angular Signals
+* HTML y CSS
+* Platzi Fake Store API (EscuelaJS) — `https://api.escuelajs.co/api/v1`
 * Git y GitHub
 
 ## Requisitos
@@ -65,84 +66,93 @@ http://localhost:4200/
 
 La aplicación se recarga automáticamente cuando se realizan cambios en los archivos del proyecto.
 
-## Funcionalidades del Módulo 01
+## Configuración de la API
 
-El proyecto implementa un catálogo de productos con:
+La URL base se define en `src/environments/environment.ts` (y en `environment.development.ts`), no está quemada en los servicios:
 
-* Vista de cliente mediante tarjetas de productos.
-* Vista de administrador mediante tabla de productos.
-* Cambio de rol entre administrador y cliente.
-* Filtro de productos por categoría.
-* Mensaje cuando no existen productos para la categoría seleccionada.
-* Visualización del estado "Agotado".
-* Botón para agregar productos al carrito.
-* Contador de productos agregados al carrito.
-* Cálculo del total del carrito.
-* Acciones de editar y eliminar productos en la vista administrativa.
+```ts
+export const environment = {
+  apiUrl: 'https://api.escuelajs.co/api/v1'
+};
+```
 
-## Componentes principales
+`HttpClient` se registra en `src/app/app.config.ts` mediante `provideHttpClient()`.
+
+### Endpoints utilizados
+
+| Método | Endpoint | Uso |
+| ------ | -------- | --- |
+| GET | `/products` | Lista todos los productos |
+| GET | `/products/{id}` | Un producto por id |
+| GET | `/products/?categoryId={id}` | Filtra por categoría |
+| GET | `/categories` | Lista de categorías |
+| POST | `/products` | Crea un producto |
+| PUT | `/products/{id}` | Actualiza un producto |
+| DELETE | `/products/{id}` | Elimina un producto |
+
+## Funcionalidades
+
+* Catálogo de productos obtenido desde la API.
+* Dos vistas según el rol: cliente (tarjetas) y administrador (tabla).
+* Filtro por categoría que consulta el endpoint con `categoryId` (no filtra en memoria).
+* Creación, edición y eliminación de productos en la vista administrativa.
+* Carrito: agregar, quitar y vaciar; cantidad y total derivados.
+* Persistencia del carrito en LocalStorage.
+* Estado de carga mientras la petición está en curso.
+* Estado vacío cuando la respuesta no trae resultados.
+* Manejo de errores visible al usuario, no solo en consola.
+
+## Servicios
+
+### `ProductoService`
+
+Servicio (`providedIn: 'root'`) que concentra las llamadas a `/products` con `HttpClient` inyectado vía `inject()`.
+
+* `obtenerTodos()`, `obtenerPorId(id)`, `obtenerPorCategoria(id)`, `crear(producto)`, `actualizar(id, cambios)`, `eliminar(id)`.
+* Todos devuelven `Observable<T>` con genérico explícito.
+* `obtenerTodos()` maneja el error con `catchError` devolviendo `of([])` y publica un mensaje de error en un signal de solo lectura.
+
+### `CategoriaService`
+
+Servicio (`providedIn: 'root'`) que consulta `/categories`.
+
+* `obtenerTodas(): Observable<Categoria[]>`.
+
+### `CarritoService`
+
+Servicio (`providedIn: 'root'`) que mantiene el estado del carrito con signals.
+
+* `carrito` expuesto con `asReadonly()`.
+* `cantidad` y `total` derivados con `computed()`.
+* `agregar()`, `quitar()` y `vaciar()`.
+* Persiste en LocalStorage tras cada cambio y restaura al construirse dentro de `try/catch`.
+
+## Componentes
 
 ### `TarjetaProductoComponent`
 
-Componente reutilizable encargado de mostrar la información de un producto.
-
-Utiliza:
+Muestra la información de un producto.
 
 * `@Input({ required: true })` para recibir el producto.
 * `@Output()` y `EventEmitter` para comunicar la acción de agregar al carrito.
-* `*ngIf` para mostrar el estado "Agotado".
-* `[disabled]` para deshabilitar el botón cuando el producto no tiene stock.
-
-La tarjeta no administra el carrito ni conoce el origen de los datos. Solo recibe un producto y comunica las acciones al componente padre.
+* No administra el carrito ni conoce el origen de los datos.
 
 ### `TablaProductosComponent`
 
-Componente encargado de mostrar los productos en una tabla para la vista administrativa.
-
-Utiliza:
+Muestra los productos en una tabla para la vista administrativa.
 
 * `@Input({ required: true })` para recibir la lista de productos.
 * `@Output()` para emitir las acciones de editar y eliminar.
-* `*ngFor` para recorrer los productos.
-* `trackBy` utilizando el identificador del producto.
-* `*ngIf` para mostrar un mensaje cuando la lista está vacía.
+* `*ngFor` con `trackBy` y estado vacío con `*ngIf`.
 
 ### `CatalogoPageComponent`
 
-Es el componente principal del catálogo y mantiene el estado de la aplicación.
+Componente contenedor del catálogo.
 
-Utiliza:
-
-* `signal()` para almacenar los productos.
-* `signal()` para controlar el rol actual.
-* `signal()` para almacenar la categoría seleccionada.
-* `computed()` para obtener los productos filtrados.
-* `computed()` para calcular la cantidad y el total del carrito.
-* `*ngSwitch` para cambiar entre la vista administrativa y la vista de cliente.
-
-## Manejo de estado
-
-Los datos principales del catálogo se mantienen mediante Angular Signals.
-
-Los valores derivados se calculan mediante `computed()`. Por ejemplo, los productos filtrados se obtienen a partir de la lista de productos y la categoría seleccionada, evitando mantener un estado duplicado.
-
-## Estructura principal
-
-```text
-src/
-└── app/
-    ├── catalogo-page/
-    ├── models/
-    │   └── producto.ts
-    ├── tabla-productos/
-    └── tarjeta-producto/
-```
-
-Las imágenes utilizadas por los productos se encuentran en:
-
-```text
-src/assets/images/
-```
+* Inyecta `ProductoService`, `CategoriaService` y `CarritoService`.
+* Expone observables (`productos$`, `categorias$`) consumidos con el pipe `async`.
+* `*ngSwitch` para cambiar entre la vista administrativa y la de cliente.
+* Concentra el estado de la pantalla (rol, carga, edición, mensajes) con signals.
 
 ## Verificación del proyecto
 
@@ -152,8 +162,8 @@ Para comprobar que el proyecto compila correctamente:
 ng build
 ```
 
-La compilación debe finalizar sin errores.
+La compilación debe finalizar sin errores ni advertencias.
 
 ## Rama del módulo
 
-El desarrollo del Módulo 0
+El desarrollo del Módulo 02 está en la rama `modulo-02-servicios`.
