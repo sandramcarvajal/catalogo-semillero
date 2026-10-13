@@ -1,53 +1,235 @@
-<h1>Catálogo de Productos</h1>
+<div class="catalogo">
+  <header class="encabezado">
+    <div class="encabezado-titulo">
+      <h1>Catálogo de Productos</h1>
+    </div>
 
-<p>Rol actual: {{ rol() }}</p>
-<button type="button" (click)="cambiarRol()">Cambiar Rol</button>
+    <div class="encabezado-acciones">
+      <span class="rol-badge">Rol: {{ rol() }}</span>
 
-<label for="categoria">Filtrar por categoría:</label>
+      <button type="button" (click)="cambiarRol()">
+        Cambiar Rol
+      </button>
+    </div>
+  </header>
 
-<select id="categoria"
-    [value]="categoriaSeleccionada()"
-    (change)="categoriaSeleccionada.set($any($event.target).value)">
-    <option value="Todas">Todas</option>
-    <option *ngFor="let categoria of categorias" [value]="categoria">
-        {{ categoria }}
-    </option>
-</select>
+  <div class="filtros">
+    <label for="categoria">Filtrar por categoría:</label>
 
-<div class ="carrito-resumen">
+    <select
+      id="categoria"
+      [value]="categoriaSeleccionada() ?? ''"
+      (change)="cambiarCategoria($any($event.target).value)"
+    >
+      <option value="">Todas las categorías</option>
+
+      <option
+        *ngFor="let categoria of categorias$ | async"
+        [value]="categoria.id"
+      >
+        {{ categoria.name }}
+      </option>
+    </select>
+  </div>
+
+  <p *ngIf="errorCategorias()">
+    {{ errorCategorias() }}
+  </p>
+
+  <div class="carrito-resumen">
     <p>Productos en el carrito: {{ cantidadCarrito() }}</p>
-    <p>Total: ${{ totalCarrito()}}</p>
-</div>
+    <p>Total: ${{ totalCarrito() }}</p>
+  </div>
 
-<div [ngSwitch]="rol()">
+  <div [ngSwitch]="rol()">
 
     <section *ngSwitchCase="'admin'">
-        <h2>Vista de Administrador</h2>
+      <h2>Vista de Administrador</h2>
 
-        <app-tabla-productos 
-            [productos]="productos()"
-            (editar)="editarProducto($event)"
-            (eliminar)="eliminarProducto($event)">
-        
-        </app-tabla-productos>
+      <p *ngIf="cargando()">Cargando productos...</p>
 
+      <p *ngIf="errorConsulta() || errorCarga()">
+        {{ errorConsulta() || errorCarga() }}
+      </p>
+
+    <!-- Formulario para registrar un producto nuevo -->
+    <section *ngIf="mostrarFormularioCreacion()" class="formulario-edicion">
+        <h3>Crear producto</h3>
+            <form (submit)="$event.preventDefault(); crearProducto()">
+            <div class="campo-edicion campo-edicion--completo">
+                <label for="nuevo-titulo">Nombre</label>
+                <input
+                    id="nuevo-titulo"
+                    type="text"
+                    [value]="nuevoProducto().title"
+                    (input)="actualizarNombreNuevoProducto($any($event.target).value)"
+                    required
+                />
+            </div>
+
+            <div class="campo-edicion">
+                <label for="nuevo-precio">Precio</label>
+                <input
+                    id="nuevo-precio"
+                    type="number"
+                    min="0"
+                    [value]="nuevoProducto().price"
+                    (input)="actualizarPrecioNuevoProducto($any($event.target).value)"
+                />
+            </div>
+
+            <div class="campo-edicion campo-edicion--completo">
+                <label for="nuevo-descripcion">Descripción</label>
+                <textarea
+                    id="nuevo-descripcion"
+                    [value]="nuevoProducto().description"
+                    (input)="actualizarDescripcionNuevoProducto($any($event.target).value)"
+                    required
+                ></textarea>
+            </div>
+
+            <div class="campo-edicion campo-edicion--completo">
+                <label for="nueva-categoria">Categoría</label>
+                <select
+                    id="nueva-categoria"
+                    [value]="nuevoProducto().categoryId"
+                    (change)="actualizarCategoriaNuevoProducto($any($event.target).value)"
+                >
+                    <option *ngFor="let categoria of categorias$ | async" [value]="categoria.id">
+                    {{ categoria.name }}
+                    </option>
+                </select>
+            </div>
+
+            <div class="campo-edicion campo-edicion--completo acciones">
+                <button type="button" class="btn-cancelar" (click)="cancelarCreacion()">
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn-guardar"
+                    [disabled]="guardando()"
+                >
+                    {{ guardando() ? 'Creando...' : 'Crear producto' }}
+                </button>
+            </div>
+        </form>
     </section>
 
+    <button
+        type="button"
+        class="btn-guardar"
+        (click)="abrirFormularioCreacion()"
+    >
+        Crear producto
+    </button>
+
+      <section *ngIf="productoEnEdicion() as producto" class="formulario-edicion">
+        <h3>Editar producto</h3>
+
+        <form (submit)="guardarEdicion($event)">
+            <div class="campo-edicion campo-edicion--completo">
+                <label for="titulo">Nombre</label>
+                <input
+                    id="titulo"
+                    type="text"
+                    [value]="producto.title"
+                    (input)="actualizarCampoEdicion('title', $any($event.target).value)"
+                    required
+                />
+            </div>
+
+            <div class="campo-edicion">
+                <label for="precio">Precio</label>
+                <input
+                    id="precio"
+                    type="number"
+                    min="0"
+                    [value]="producto.price"
+                    (input)="actualizarCampoEdicion('price', $any($event.target).value)"
+                    required
+                />
+            </div>
+
+            <div class="campo-edicion campo-edicion--completo">
+                <label for="descripcion">Descripción</label>
+                <textarea
+                    id="descripcion"
+                    [value]="producto.description"
+                    (input)="actualizarCampoEdicion('description', $any($event.target).value)"
+                    required
+                ></textarea>
+            </div>
+
+            <div class="campo-edicion campo-edicion--completo acciones">
+                <button type="button" class="btn-cancelar" (click)="cancelarEdicion()">
+                    Cancelar
+                </button>
+
+                <button type="submit" class="btn-guardar" [disabled]="guardando()">
+                    {{ guardando() ? 'Guardando...' : 'Guardar' }}
+                </button>
+            </div>
+        </form>
+    </section>
+
+      <p *ngIf="mensajeOperacion() as op" role="status" class="mensaje-operacion" [class.error]="!op.exito">
+        {{ op.mensaje }}
+      </p>
+
+      <ng-container *ngIf="productos$ | async as productos">
+        <app-tabla-productos
+          *ngIf="!cargando() && productos.length > 0"
+          [productos]="productos"
+          (editar)="editarProducto($event)"
+          (eliminar)="eliminarProducto($event)"
+        ></app-tabla-productos>
+
+        <p *ngIf="!cargando() && productos.length === 0
+                  && !errorConsulta() && !errorCarga()">
+          No hay productos disponibles.
+        </p>
+      </ng-container>
+
+      <ng-container *ngIf="eliminacionResultados$ | async as resultado">
+        <p role="status" [class.error]="!resultado.exito">
+            {{ resultado.mensaje }}
+        </p>
+      </ng-container>
+
+    <ng-container *ngIf="actualizacionResultado$ | async"></ng-container>
+    
+    <ng-container *ngIf="creacionResultado$ | async"></ng-container>
+
+    </section>
+    
     <section *ngSwitchCase="'customer'">
-        <h2>Catálogo para Cliente</h2>
+      <h2>Catálogo para Cliente</h2>
 
-        <div class="productos-grid">
+      <p *ngIf="cargando()">Cargando productos...</p>
 
-            <app-tarjeta-producto 
-                *ngFor="let producto of productosFiltrados(); trackBy: trackById"
-                [producto]="producto"
-                (agregarAlCarrito)="agregarAlCarrito($event)">
-            </app-tarjeta-producto>
+      <p *ngIf="errorConsulta() || errorCarga()">
+        {{ errorConsulta() || errorCarga() }}
+      </p>
+
+      <ng-container *ngIf="productos$ | async as productos">
+        <div
+          class="productos-grid"
+          *ngIf="!cargando() && productos.length > 0"
+        >
+          <app-tarjeta-producto
+            *ngFor="let producto of productos; trackBy: trackById"
+            [producto]="producto"
+            (agregarAlCarrito)="agregarAlCarrito($event)"
+          ></app-tarjeta-producto>
         </div>
 
-        <p *ngIf="productosFiltrados().length === 0">
-            No hay productos disponibles en esta categoría.
+        <p *ngIf="!cargando() && productos.length === 0
+                  && !errorConsulta() && !errorCarga()">
+          No hay productos disponibles en esta categoría.
         </p>
+      </ng-container>
     </section>
 
-</div>
+  </div>
