@@ -1,0 +1,32 @@
+<section class="detalle">
+  <ng-container *ngIf="estado$ | async as estado">
+    <p class="estado" *ngIf="estado.cargando">Cargando producto...</p>
+
+    <p class="estado error" *ngIf="estado.error" role="alert">
+      {{ estado.error }}
+    </p>
+
+    <article class="producto" *ngIf="estado.producto as producto">
+      <img class="producto-imagen" [src]="producto.images[0]" alt="{{ producto.title }}" />
+
+      <div class="producto-info">
+        <h2>{{ producto.title }}</h2>
+        <p class="categoria">{{ producto.category.name }}</p>
+        <p class="precio">${{ producto.price }}</p>
+        <p class="descripcion">{{ producto.description }}</p>
+      </div>
+    </article>
+
+    <section class="relacionados" *ngIf="estado.relacionados.length > 0">
+      <h3>Productos relacionados</h3>
+
+      <ul>
+        <li *ngFor="let relacionado of estado.relacionados">
+          <a [routerLink]="['/productos', relacionado.id]">
+            {{ relacionado.title }}
+          </a>
+        </li>
+      </ul>
+    </section>
+  </ng-container>
+</section>

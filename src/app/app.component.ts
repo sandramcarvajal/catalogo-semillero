@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { CatalogoPageComponent } from './catalogo-page/catalogo-page.component';
+import { RouterOutlet } from '@angular/router';
+import { EncabezadoComponent } from './encabezado/encabezado.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CatalogoPageComponent],
+  imports: [RouterOutlet, EncabezadoComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

@@ -1,0 +1,27 @@
+.admin-usuarios h2 {
+    margin: 0 0 16px;
+    color: #1f2937;
+}
+
+.admin-usuarios table {
+    width: 100%;
+    max-width: 520px;
+    border-collapse: collapse;
+}
+
+.admin-usuarios th,
+.admin-usuarios td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-usuarios th {
+    font-size: 13px;
+    text-transform: uppercase;
+    color: #6b7280;
+}
+
+.admin-usuarios td {
+    color: #1f2937;
+}

@@ -104,6 +104,37 @@ p {
     align-items: stretch;
 }
 
+.paginacion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.paginacion button {
+    padding: 8px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #374151;
+    cursor: pointer;
+}
+
+.paginacion button:hover:not(:disabled) {
+    background-color: #f3f4f6;
+}
+
+.paginacion button:disabled {
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.paginacion span {
+    font-size: 14px;
+    color: #6b7280;
+}
+
 .formulario-edicion {
     margin: 24px 0;
     padding: 24px;

@@ -1,0 +1,27 @@
+<section class="login">
+  <h2>Iniciar sesión</h2>
+
+  <form (submit)="$event.preventDefault(); iniciarSesion()">
+    <label for="usuario">Usuario</label>
+    <input
+      id="usuario"
+      type="text"
+      [value]="usuario()"
+      (input)="usuario.set($any($event.target).value)"
+      autocomplete="username"
+    />
+
+    <label for="clave">Clave</label>
+    <input
+      id="clave"
+      type="password"
+      [value]="clave()"
+      (input)="clave.set($any($event.target).value)"
+      autocomplete="current-password"
+    />
+
+    <p class="error" *ngIf="error()" role="alert">{{ error() }}</p>
+
+    <button type="submit">Entrar</button>
+  </form>
+</section>

@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { Producto } from '../models/producto';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TarjetaProductoComponent } from '../tarjeta-producto/tarjeta-producto.component';
 import { TablaProductosComponent } from '../tabla-productos/tabla-productos.component';
 import { ProductoService } from '../services/producto.service';
@@ -33,8 +34,9 @@ export class CatalogoPageComponent {
   private productoService = inject(ProductoService);
   private categoriaService = inject(CategoriaService);
   private carritoService = inject(CarritoService);
+  private ruta = inject(ActivatedRoute);
+  private router = inject(Router);
 
-      // Control del estado de la pantalla
     rol = signal<'admin' | 'customer'>('customer');
     cargando = signal(true);
     errorConsulta = signal<string | null>(null);
@@ -51,7 +53,6 @@ export class CatalogoPageComponent {
     });
   
 
-  // Categorias consultadas desde la API
     categorias$ = this.categoriaService.obtenerTodas().pipe (
       catchError((error) => {
         console.error('Errror al cargar categorias', error);
@@ -61,23 +62,33 @@ export class CatalogoPageComponent {
       shareReplay(1)
     );
 
-    // Muestra todas las categorias
+    // Filtros de la URL: ?categoria= y ?pagina=
     categoriaSeleccionada = signal<number | null>(null);
-    private categoriaSeleccionada$ =
-      new BehaviorSubject<number | null>(null);
+    paginaActual = signal(1);
+    totalProductos = signal(0);
+    readonly tamanoPagina = 6;
+
+    private filtros$ = new BehaviorSubject<{
+      categoria: number | null;
+      pagina: number;
+    }>({ categoria: null, pagina: 1 });
 
     
-    // Productos consultados desde la API
-    productos$ = this.categoriaSeleccionada$.pipe (
-      switchMap((categoriaId) => {
+    productos$ = this.filtros$.pipe (
+      switchMap(({ categoria, pagina }) => {
         this.cargando.set(true);
         this.errorConsulta.set(null);
 
-        const peticion$ = categoriaId === null
+        const peticion$ = categoria === null
           ? this.productoService.obtenerTodos()
-          : this.productoService.obtenerPorCategoria(categoriaId);
+          : this.productoService.obtenerPorCategoria(categoria);
 
         return peticion$.pipe (
+          tap((productos) => this.totalProductos.set(productos.length)),
+          map((productos) => {
+            const inicio = (pagina - 1) * this.tamanoPagina;
+            return productos.slice(inicio, inicio + this.tamanoPagina);
+          }),
           catchError((error) => {
             console.error('Error al consultar productos', error);
             this.errorConsulta.set(
@@ -91,7 +102,30 @@ export class CatalogoPageComponent {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  // Solicitudes de actualización de productos.
+  constructor() {
+    // Los filtros viven en la URL: se comparten y sobreviven al F5.
+    this.ruta.queryParamMap.subscribe((params) => {
+      const categoriaParam = params.get('categoria');
+      const categoria =
+        categoriaParam === null || categoriaParam === ''
+          ? null
+          : Number(categoriaParam);
+      const pagina = Number(params.get('pagina')) || 1;
+
+      this.categoriaSeleccionada.set(categoria);
+      this.paginaActual.set(pagina);
+      this.filtros$.next({ categoria, pagina });
+    });
+  }
+
+  // Vuelve a pedir los productos con los filtros actuales.
+  private recargar(): void {
+    this.filtros$.next({
+      categoria: this.categoriaSeleccionada(),
+      pagina: this.paginaActual()
+    });
+  }
+
   private solicitudesActualizacion$ = new Subject<Producto>();
 
   actualizacionResultado$ = this.solicitudesActualizacion$.pipe(
@@ -111,9 +145,7 @@ export class CatalogoPageComponent {
         tap(() => {
           this.productoEnEdicion.set(null);
 
-          this.categoriaSeleccionada$.next(
-            this.categoriaSeleccionada()
-          );
+          this.recargar();
         }),
         map((actualizado) => ({
           exito: true,
@@ -135,7 +167,6 @@ export class CatalogoPageComponent {
   );
 
   
-  // Actualiza el nombre del producto nuevo.
   actualizarNombreNuevoProducto(valor: string): void {
     this.nuevoProducto.update(producto => ({
       ...producto,
@@ -143,7 +174,6 @@ export class CatalogoPageComponent {
     }));
   }
 
-  // Actualiza el precio del producto nuevo.
   actualizarPrecioNuevoProducto(valor: string): void {
     this.nuevoProducto.update(producto => ({
       ...producto,
@@ -151,7 +181,6 @@ export class CatalogoPageComponent {
     }));
   }
 
-  // Actualiza la descripción del producto nuevo.
   actualizarDescripcionNuevoProducto(valor: string): void {
     this.nuevoProducto.update(producto => ({
       ...producto,
@@ -159,7 +188,6 @@ export class CatalogoPageComponent {
     }));
   }
 
-  // Actualiza la categoría del producto nuevo.
   actualizarCategoriaNuevoProducto(valor: string): void {
     this.nuevoProducto.update(producto => ({
       ...producto,
@@ -167,11 +195,8 @@ export class CatalogoPageComponent {
     }));
   }
 
-  //
-  // Recibe las solicitudes para crear productos nuevos.
   private solicitudesCreacion$ = new Subject<void>();
 
-  // Procesa cada solicitud de creación y publica el resultado.
   creacionResultado$ = this.solicitudesCreacion$.pipe(
     switchMap(() => {
       const datos = this.nuevoProducto();
@@ -211,10 +236,7 @@ export class CatalogoPageComponent {
             categoryId: 1
           });
 
-          // Solicita nuevamente los productos de la categoría actual.
-          this.categoriaSeleccionada$.next(
-            this.categoriaSeleccionada()
-          );
+          this.recargar();
         }),
         map((creado) => ({
           exito: true,
@@ -234,7 +256,6 @@ export class CatalogoPageComponent {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  // Envía la solicitud de creación 
   crearProducto(): void {
     if (this.guardando()) {
       return;
@@ -244,7 +265,6 @@ export class CatalogoPageComponent {
   }
 
 
-  // Manejo de eliminación de productos
   private solicitudesEliminacion$ = new Subject<Producto>();
 
   eliminacionResultados$ = this.solicitudesEliminacion$.pipe(
@@ -252,9 +272,7 @@ export class CatalogoPageComponent {
       this.productoService.eliminar(producto.id).pipe(
         tap(() => {
 
-          this.categoriaSeleccionada$.next(
-            this.categoriaSeleccionada()
-          );
+          this.recargar();
         }),
         map(() => ({
           exito: true,
@@ -283,17 +301,28 @@ export class CatalogoPageComponent {
   }
 
   cambiarCategoria(valor: string): void {
-    const id = valor === '' ? null : Number(valor);
+    const categoria = valor === '' ? null : Number(valor);
 
-    this.categoriaSeleccionada.set(id);
-    this.categoriaSeleccionada$.next(id);
+    this.router.navigate([], {
+      relativeTo: this.ruta,
+      queryParams: { categoria, pagina: 1 }
+    });
+  }
+
+  cambiarPagina(pagina: number): void {
+    this.router.navigate([], {
+      relativeTo: this.ruta,
+      queryParams: {
+        categoria: this.categoriaSeleccionada(),
+        pagina
+      }
+    });
   }
 
   trackById(index: number, producto: Producto): number {
     return producto.id;
   }
 
-    //Permite consultar los productos del carrito, la cantidad y el valor total 
   carrito = this.carritoService.carrito;
   cantidadCarrito = this.carritoService.cantidad;
   totalCarrito = this.carritoService.total;
@@ -302,7 +331,6 @@ export class CatalogoPageComponent {
     this.carritoService.agregar(producto);
   }
 
-  // Cambios de los campos del formulario de edición del producto
   editarProducto(producto: Producto): void {
     this.mensajeOperacion.set(null);
     this.productoEnEdicion.set({ ...producto });
@@ -312,7 +340,6 @@ export class CatalogoPageComponent {
     this.productoEnEdicion.set(null);
   }
 
-  // Guarda loscambios realizados en el producto seleccionado
   guardarEdicion(event: Event): void {
     event.preventDefault();
 
@@ -325,7 +352,6 @@ export class CatalogoPageComponent {
     this.solicitudesActualizacion$.next(producto);
   }
 
-  // Actualiza el dato del producto que el usuario modifica en el formulario
   actualizarCampoEdicion(
     campo: 'title' | 'price' | 'description',
     valor: string
@@ -343,7 +369,6 @@ export class CatalogoPageComponent {
     });
   }
 
-  // Abre el formulario y limpia los campos para registrar un producto nuevo.
   abrirFormularioCreacion(): void {
     this.mensajeOperacion.set(null);
 
@@ -357,12 +382,10 @@ export class CatalogoPageComponent {
     this.mostrarFormularioCreacion.set(true);
   }
 
-  // Cierra el formulario sin crear el producto.
   cancelarCreacion(): void {
     this.mostrarFormularioCreacion.set(false);
   }
 
-  // Confirma la eliminación del producto y envia a solicitud
   eliminarProducto(producto: Producto): void {
     const confirmar = window.confirm(
       `¿Estas seguro de que deseas eliminar este producto: " ${producto.title}"?`

@@ -13,7 +13,6 @@ export class ProductoService {
   private apiUrl = `${environment.apiUrl}/products`;
   private _errorCarga = signal<string | null>(null);
 
-  // Método para consultar todos los productos
   obtenerTodos(): Observable<Producto[]> {
     this._errorCarga.set(null);
 
@@ -29,19 +28,16 @@ export class ProductoService {
     );
   }
 
-  // Método para consultar un producto por ID
   obtenerPorId(id: number): Observable<Producto> {
     return this.http.get<Producto>(
       `${this.apiUrl}/${id}`);
   }
 
-  // Método para crear un producto nuevo
   crear(producto: CrearProducto): Observable<Producto> {
     return this.http.post<Producto>(this.apiUrl, producto);
   }
 
 
-  // Método para actualizar un producto
   actualizar(
     id: number,
     cambios: Partial<Producto>): Observable<Producto> {
@@ -51,21 +47,18 @@ export class ProductoService {
     );
   }
   
-  // Método para eliminar un producto
   eliminar(id: number): Observable<void> {
     return this.http.delete<void>(
       `${this.apiUrl}/${id}`
     );
   }
 
-  // Consultar por cateegoria ID
   obtenerPorCategoria(id: number): Observable<Producto[]> {
     return this.http.get<Producto[]>(
       `${this.apiUrl}/?categoryId=${id}`
     );
   }
 
-  // Manejo de error
   errorCarga = this._errorCarga.asReadonly();
  
 }

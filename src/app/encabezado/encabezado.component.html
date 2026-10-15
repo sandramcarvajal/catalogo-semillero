@@ -1,0 +1,26 @@
+<nav class="menu">
+  <a class="marca" routerLink="/productos">Catálogo Semillero</a>
+
+  <div class="enlaces">
+    <a routerLink="/productos" routerLinkActive="activo">Catálogo</a>
+
+    <a *ngIf="autenticado()" routerLink="/carrito" routerLinkActive="activo">
+      Carrito
+    </a>
+
+    <a *ngIf="esAdmin()" routerLink="/admin" routerLinkActive="activo">
+      Admin
+    </a>
+  </div>
+
+  <div class="sesion">
+    <a *ngIf="!autenticado()" routerLink="/login" routerLinkActive="activo">
+      Iniciar sesión
+    </a>
+
+    <ng-container *ngIf="usuario() as actual">
+      <span class="usuario">{{ actual.usuario }} · {{ actual.rol }}</span>
+      <button type="button" (click)="cerrarSesion()">Salir</button>
+    </ng-container>
+  </div>
+</nav>

@@ -11,7 +11,6 @@ export class CategoriaService {
   private http = inject(HttpClient);
   private apiUrl =`${environment.apiUrl}/categories`;
 
-  //Método para consultar todos los productos
   obtenerTodas(): Observable<Categoria[]> {
     return this.http.get<Categoria[]>(this.apiUrl);
   }

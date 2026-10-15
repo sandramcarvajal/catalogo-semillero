@@ -1,0 +1,35 @@
+<section class="carrito">
+  <h2>Mi carrito</h2>
+
+  <p class="vacio" *ngIf="cantidad() === 0">
+    Todavía no agregaste productos.
+    <a routerLink="/productos">Ir al catálogo</a>.
+  </p>
+
+  <ng-container *ngIf="cantidad() > 0">
+    <ul class="lista">
+      <li *ngFor="let producto of carrito()">
+        <img [src]="producto.images[0]" alt="{{ producto.title }}" />
+
+        <div class="datos">
+          <p class="titulo">{{ producto.title }}</p>
+          <p class="categoria">{{ producto.category.name }}</p>
+        </div>
+
+        <span class="precio">${{ producto.price }}</span>
+
+        <button type="button" class="quitar" (click)="quitar(producto.id)">
+          Quitar
+        </button>
+      </li>
+    </ul>
+
+    <footer class="resumen">
+      <p>Productos: {{ cantidad() }}</p>
+      <p class="total">Total: ${{ total() }}</p>
+      <button type="button" class="vaciar" (click)="vaciar()">
+        Vaciar carrito
+      </button>
+    </footer>
+  </ng-container>
+</section>

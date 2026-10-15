@@ -1,0 +1,19 @@
+<section class="admin-usuarios">
+  <h2>Usuarios</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Usuario</th>
+        <th>Rol</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let usuario of usuarios">
+        <td>{{ usuario.usuario }}</td>
+        <td>{{ usuario.rol }}</td>
+      </tr>
+    </tbody>
+  </table>
+</section>

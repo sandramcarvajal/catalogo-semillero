@@ -1,0 +1,80 @@
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 14px 24px;
+    background-color: #1f2937;
+}
+
+.marca {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.marca:hover {
+    color: #93c5fd;
+}
+
+.enlaces {
+    display: flex;
+    gap: 8px;
+}
+
+.enlaces a,
+.sesion a {
+    padding: 8px 14px;
+    border-radius: 8px;
+    color: #d1d5db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.enlaces a:hover,
+.sesion a:hover {
+    background-color: #374151;
+    color: #ffffff;
+}
+
+.enlaces a.activo {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+.sesion {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+}
+
+.sesion .usuario {
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+.sesion button {
+    padding: 8px 14px;
+    border: 1px solid #ef4444;
+    border-radius: 8px;
+    background-color: transparent;
+    color: #fca5a5;
+    cursor: pointer;
+}
+
+.sesion button:hover {
+    background-color: #ef4444;
+    color: #ffffff;
+}
+
+@media (max-width: 600px) {
+    .menu {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .sesion {
+        margin-left: 0;
+    }
+}

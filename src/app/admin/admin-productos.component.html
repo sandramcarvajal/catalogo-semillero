@@ -1,0 +1,42 @@
+<section class="admin-productos">
+  <h2>Administrar productos</h2>
+
+  <form (submit)="$event.preventDefault(); crear()">
+    <label for="admin-titulo">Título</label>
+    <input
+      id="admin-titulo"
+      type="text"
+      [value]="titulo()"
+      (input)="cambiarTitulo($any($event.target).value)"
+    />
+
+    <label for="admin-precio">Precio</label>
+    <input
+      id="admin-precio"
+      type="number"
+      min="0"
+      [value]="precio()"
+      (input)="cambiarPrecio($any($event.target).value)"
+    />
+
+    <label for="admin-descripcion">Descripción</label>
+    <textarea
+      id="admin-descripcion"
+      [value]="descripcion()"
+      (input)="cambiarDescripcion($any($event.target).value)"
+    ></textarea>
+
+    <button type="submit" [disabled]="guardando()">
+      {{ guardando() ? 'Creando...' : 'Crear producto' }}
+    </button>
+  </form>
+
+  <p
+    class="mensaje"
+    *ngIf="mensaje() as resultado"
+    [class.error]="!resultado.exito"
+    role="status"
+  >
+    {{ resultado.mensaje }}
+  </p>
+</section>

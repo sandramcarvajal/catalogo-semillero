@@ -52,7 +52,6 @@
         {{ errorConsulta() || errorCarga() }}
       </p>
 
-    <!-- Formulario para registrar un producto nuevo -->
     <section *ngIf="mostrarFormularioCreacion()" class="formulario-edicion">
         <h3>Crear producto</h3>
             <form (submit)="$event.preventDefault(); crearProducto()">
@@ -229,6 +228,26 @@
                   && !errorConsulta() && !errorCarga()">
           No hay productos disponibles en esta categoría.
         </p>
+
+        <div class="paginacion" *ngIf="totalProductos() > tamanoPagina">
+          <button
+            type="button"
+            (click)="cambiarPagina(paginaActual() - 1)"
+            [disabled]="paginaActual() <= 1"
+          >
+            Anterior
+          </button>
+
+          <span>Página {{ paginaActual() }}</span>
+
+          <button
+            type="button"
+            (click)="cambiarPagina(paginaActual() + 1)"
+            [disabled]="paginaActual() * tamanoPagina >= totalProductos()"
+          >
+            Siguiente
+          </button>
+        </div>
       </ng-container>
     </section>
 

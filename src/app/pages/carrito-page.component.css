@@ -1,0 +1,129 @@
+.carrito {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 32px 24px;
+}
+
+.carrito h2 {
+    margin: 0 0 20px;
+    color: #1f2937;
+}
+
+.vacio {
+    padding: 24px;
+    border: 1px dashed #d1d5db;
+    border-radius: 12px;
+    color: #6b7280;
+    text-align: center;
+}
+
+.vacio a {
+    color: #2563eb;
+}
+
+.lista {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.lista li {
+    display: grid;
+    grid-template-columns: 64px 1fr auto auto;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background-color: #ffffff;
+}
+
+.lista img {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    object-fit: cover;
+    background-color: #f3f4f6;
+}
+
+.datos .titulo {
+    margin: 0;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.datos .categoria {
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: #6b7280;
+    text-transform: capitalize;
+}
+
+.precio {
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.quitar {
+    padding: 6px 14px;
+    border: 1px solid #fca5a5;
+    border-radius: 8px;
+    background-color: #fef2f2;
+    color: #b91c1c;
+    cursor: pointer;
+}
+
+.quitar:hover {
+    background-color: #fee2e2;
+}
+
+.resumen {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 24px;
+    padding: 16px;
+    border-radius: 12px;
+    background-color: #f9fafb;
+    border: 1px solid #d1d5db;
+}
+
+.resumen p {
+    margin: 0;
+    color: #374151;
+}
+
+.resumen .total {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.vaciar {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    background-color: #374151;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.vaciar:hover {
+    background-color: #1f2937;
+}
+
+@media (max-width: 600px) {
+    .lista li {
+        grid-template-columns: 48px 1fr;
+    }
+
+    .resumen {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

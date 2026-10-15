@@ -1,7 +1,9 @@
 <div class="tarjeta">
     <img [src]="producto.images[0]" alt="{{ producto.title }}">
 
-    <h3>{{ producto.title }}</h3>
+    <h3>
+        <a [routerLink]="['/productos', producto.id]">{{ producto.title }}</a>
+    </h3>
 
     <p>Precio: ${{ producto.price }}</p>
 
