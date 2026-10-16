@@ -1,0 +1,38 @@
+<section class="formulario-producto">
+  <h2>Nuevo producto</h2>
+
+  <form [formGroup]="formulario" (ngSubmit)="enviar()">
+    <label for="titulo">Título</label>
+    <input id="titulo" type="text" formControlName="titulo" />
+
+    <label for="precio">Precio</label>
+    <input id="precio" type="number" formControlName="precio" />
+
+    <label for="descripcion">Descripción</label>
+    <textarea id="descripcion" formControlName="descripcion"></textarea>
+
+    <label for="categoria">Categoría</label>
+    <select id="categoria" formControlName="categoriaId">
+      <option [ngValue]="0" disabled>Seleccioná una categoría</option>
+      <option *ngFor="let categoria of categorias()" [ngValue]="categoria.id">
+        {{ categoria.name }}
+      </option>
+    </select>
+
+    <fieldset formArrayName="imagenes">
+      <legend>Imágenes</legend>
+
+      <div *ngFor="let control of imagenes.controls; let i = index">
+        <label [attr.for]="'imagen-' + i">Imagen {{ i + 1 }}</label>
+        <input
+          [id]="'imagen-' + i"
+          type="text"
+          placeholder="URL de la imagen"
+          [formControlName]="i"
+        />
+      </div>
+    </fieldset>
+
+    <button type="submit">Guardar</button>
+  </form>
+</section>

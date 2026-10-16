@@ -1,9 +1,6 @@
 import { AbstractControl, ValidationErrors } from '@angular/forms';
 
-/**
- * Rechaza textos compuestos únicamente por espacios en blanco.
- * Un campo con "   " pasa `required`, así que este validador cubre ese caso.
- */
+// El required no detecta espacios: un campo con "   " pasaría sin este validador.
 export function noSoloEspacios(control: AbstractControl): ValidationErrors | null {
   const valor = control.value as string | null;
 
