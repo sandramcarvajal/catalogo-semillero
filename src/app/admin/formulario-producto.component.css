@@ -53,12 +53,39 @@
     border-radius: 8px;
 }
 
-.formulario-producto fieldset input {
+.formulario-producto fieldset > div {
+    margin-bottom: 12px;
+}
+
+.formulario-producto .imagen-fila {
+    display: flex;
+    gap: 8px;
+}
+
+.formulario-producto .imagen-fila input {
+    flex: 1;
     margin-bottom: 0;
 }
 
-.formulario-producto fieldset div {
-    margin-bottom: 12px;
+.formulario-producto .btn-secundario {
+    align-self: flex-start;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background-color: #f9fafb;
+    color: #374151;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.formulario-producto .btn-secundario:hover:not(:disabled) {
+    background-color: #eef2ff;
+}
+
+.formulario-producto .btn-secundario:disabled {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
 }
 
 .formulario-producto button {

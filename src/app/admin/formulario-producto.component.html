@@ -24,13 +24,29 @@
 
       <div *ngFor="let control of imagenes.controls; let i = index">
         <label [attr.for]="'imagen-' + i">Imagen {{ i + 1 }}</label>
-        <input
-          [id]="'imagen-' + i"
-          type="text"
-          placeholder="URL de la imagen"
-          [formControlName]="i"
-        />
+
+        <div class="imagen-fila">
+          <input
+            [id]="'imagen-' + i"
+            type="text"
+            placeholder="URL de la imagen"
+            [formControlName]="i"
+          />
+
+          <button
+            type="button"
+            class="btn-secundario"
+            (click)="quitarImagen(i)"
+            [disabled]="imagenes.length === 1"
+          >
+            Quitar
+          </button>
+        </div>
       </div>
+
+      <button type="button" class="btn-secundario" (click)="agregarImagen()">
+        Agregar imagen
+      </button>
     </fieldset>
 
     <button type="submit">Guardar</button>

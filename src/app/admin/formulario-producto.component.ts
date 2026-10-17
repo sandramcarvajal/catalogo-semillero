@@ -55,6 +55,14 @@ export class FormularioProductoComponent {
     return this.fb.nonNullable.control('', [Validators.required]);
   }
 
+  agregarImagen(): void {
+    this.imagenes.push(this.nuevaImagen());
+  }
+
+  quitarImagen(indice: number): void {
+    this.imagenes.removeAt(indice);
+  }
+
   enviar(): void {
     if (this.formulario.invalid) {
       return;
