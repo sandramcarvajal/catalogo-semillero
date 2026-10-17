@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Categoria } from '../models/categoria';
 import { CategoriaService } from '../services/categoria.service';
 import { ProductoService } from '../services/producto.service';
+import { PuedeSalir } from '../guards/cambios-sin-guardar.guard';
 import { noSoloEspacios } from '../validators/no-solo-espacios.validator';
 
 @Component({
@@ -15,7 +16,7 @@ import { noSoloEspacios } from '../validators/no-solo-espacios.validator';
   templateUrl: './formulario-producto.component.html',
   styleUrl: './formulario-producto.component.css'
 })
-export class FormularioProductoComponent {
+export class FormularioProductoComponent implements PuedeSalir {
   private fb = inject(FormBuilder);
   private productoService = inject(ProductoService);
   private categoriaService = inject(CategoriaService);
@@ -184,6 +185,7 @@ export class FormularioProductoComponent {
     peticion$.subscribe({
       next: () => {
         this.guardando.set(false);
+        this.formulario.markAsPristine();
         this.router.navigate(['/admin/productos']);
       },
       error: () => {
@@ -191,5 +193,9 @@ export class FormularioProductoComponent {
         this.errorEnvio.set('No se pudo guardar el producto. Intentá de nuevo.');
       }
     });
+  }
+
+  puedeSalir(): boolean {
+    return !this.formulario.dirty;
   }
 }
