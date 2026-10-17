@@ -31,6 +31,14 @@ export const routes: Routes = [
     title: 'Iniciar sesión'
   },
   {
+    path: 'registro',
+    loadComponent: () =>
+      import('./pages/registro-page.component').then(
+        m => m.RegistroPageComponent
+      ),
+    title: 'Crear cuenta'
+  },
+  {
     path: 'admin',
     canMatch: [adminGuard],
     loadChildren: () =>

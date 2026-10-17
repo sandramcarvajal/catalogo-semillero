@@ -18,6 +18,10 @@
       Iniciar sesión
     </a>
 
+    <a *ngIf="!autenticado()" routerLink="/registro" routerLinkActive="activo">
+      Registrarse
+    </a>
+
     <ng-container *ngIf="usuario() as actual">
       <span class="usuario">{{ actual.usuario }} · {{ actual.rol }}</span>
       <button type="button" (click)="cerrarSesion()">Salir</button>
