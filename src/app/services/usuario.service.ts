@@ -11,6 +11,8 @@ export class UsuarioService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/users`;
 
+  // isAvailable=false => el correo ya está registrado. La API demo de escuelajs
+  // responde siempre false, así que en este entorno todo correo figura ocupado.
   existeCorreo(correo: string): Observable<boolean> {
     return this.http
       .post<DisponibilidadCorreo>(`${this.apiUrl}/is-available`, {

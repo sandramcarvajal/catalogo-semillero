@@ -4,6 +4,7 @@ import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angu
 import { RouterLink } from '@angular/router';
 import { UsuarioService } from '../services/usuario.service';
 import { clavesIguales } from '../validators/claves-iguales.validator';
+import { correoDisponible } from '../validators/correo-disponible.validator';
 import { noSoloEspacios } from '../validators/no-solo-espacios.validator';
 
 @Component({
@@ -32,7 +33,11 @@ export class RegistroPageComponent {
           noSoloEspacios
         ]
       ],
-      correo: ['', [Validators.required, Validators.email]],
+      correo: [
+        '',
+        [Validators.required, Validators.email],
+        [correoDisponible()]
+      ],
       clave: ['', [Validators.required, Validators.minLength(8)]],
       confirmacion: ['', [Validators.required]]
     },

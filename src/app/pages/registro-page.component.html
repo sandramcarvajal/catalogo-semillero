@@ -29,6 +29,9 @@
     <small class="error" *ngIf="correo.touched && correo.hasError('email')">
       Ingresá un correo válido.
     </small>
+    <small class="error" *ngIf="correo.touched && correo.hasError('correoOcupado')">
+      Ese correo ya está registrado.
+    </small>
 
     <label for="clave">Clave</label>
     <input
