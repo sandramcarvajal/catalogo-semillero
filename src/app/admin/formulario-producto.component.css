@@ -1,0 +1,133 @@
+.formulario-producto h2 {
+    margin: 0 0 20px;
+    color: #1f2937;
+}
+
+.formulario-producto form {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 520px;
+    padding: 24px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background-color: #ffffff;
+}
+
+.formulario-producto label,
+.formulario-producto legend {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.formulario-producto .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.formulario-producto input,
+.formulario-producto textarea,
+.formulario-producto select {
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: #f9fafb;
+}
+
+.formulario-producto textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.formulario-producto input:focus,
+.formulario-producto textarea:focus,
+.formulario-producto select:focus {
+    outline: none;
+    border-color: #2563eb;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.formulario-producto .error {
+    color: #b91c1c;
+    font-size: 13px;
+}
+
+.formulario-producto .contador {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.formulario-producto .contador.exceso {
+    color: #b91c1c;
+}
+
+.formulario-producto .error-envio {
+    margin: 0 0 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background-color: #fef2f2;
+    color: #b91c1c;
+    font-size: 14px;
+}
+
+.formulario-producto fieldset {
+    margin: 0 0 12px;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.formulario-producto .imagen-fila {
+    display: flex;
+    gap: 8px;
+}
+
+.formulario-producto .imagen-fila input {
+    flex: 1;
+}
+
+.formulario-producto .btn-secundario {
+    align-self: flex-start;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background-color: #f9fafb;
+    color: #374151;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.formulario-producto .btn-secundario:hover:not(:disabled) {
+    background-color: #eef2ff;
+}
+
+.formulario-producto .btn-secundario:disabled {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.formulario-producto button {
+    align-self: flex-start;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: #2563eb;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.formulario-producto button:hover:not(:disabled) {
+    background-color: #1d4ed8;
+}
+
+.formulario-producto button:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+}

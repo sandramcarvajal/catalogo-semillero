@@ -1,0 +1,84 @@
+.registro {
+    max-width: 380px;
+    margin: 48px auto;
+    padding: 32px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.registro h2 {
+    margin: 0 0 20px;
+    color: #1f2937;
+}
+
+.registro form {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.registro label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.registro input {
+    margin-bottom: 4px;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.registro input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.registro .error {
+    margin: 0 0 8px;
+    font-size: 13px;
+    color: #b91c1c;
+}
+
+.registro .error-envio {
+    margin: 4px 0 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background-color: #fee2e2;
+    font-size: 13px;
+    color: #b91c1c;
+}
+
+.registro .exito {
+    margin: 0 0 16px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background-color: #dcfce7;
+    font-size: 13px;
+    color: #166534;
+}
+
+.registro button {
+    margin-top: 4px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: #2563eb;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.registro button:hover {
+    background-color: #1d4ed8;
+}
+
+.registro button:disabled {
+    background-color: #93c5fd;
+    cursor: not-allowed;
+}

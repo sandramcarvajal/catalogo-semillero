@@ -1,0 +1,75 @@
+<section class="registro">
+  <h2>Crear cuenta</h2>
+
+  <p class="exito" *ngIf="registrado()" role="status">
+    ¡Cuenta creada! Ya podés <a routerLink="/login">iniciar sesión</a>.
+  </p>
+
+  <form [formGroup]="formulario" (ngSubmit)="registrar()">
+    <label for="nombre">Nombre</label>
+    <input id="nombre" type="text" formControlName="nombre" autocomplete="name" />
+    <small class="error" *ngIf="nombre.touched && nombre.hasError('required')">
+      El nombre es obligatorio.
+    </small>
+    <small class="error" *ngIf="nombre.touched && nombre.hasError('minlength')">
+      Mínimo 2 caracteres.
+    </small>
+    <small class="error" *ngIf="nombre.touched && nombre.hasError('maxlength')">
+      Máximo 60 caracteres.
+    </small>
+    <small class="error" *ngIf="nombre.touched && nombre.hasError('soloEspacios')">
+      El nombre no puede tener solo espacios.
+    </small>
+
+    <label for="correo">Correo</label>
+    <input id="correo" type="email" formControlName="correo" autocomplete="email" />
+    <small class="error" *ngIf="correo.touched && correo.hasError('required')">
+      El correo es obligatorio.
+    </small>
+    <small class="error" *ngIf="correo.touched && correo.hasError('email')">
+      Ingresá un correo válido.
+    </small>
+    <small class="error" *ngIf="correo.touched && correo.hasError('correoOcupado')">
+      Ese correo ya está registrado.
+    </small>
+
+    <label for="clave">Clave</label>
+    <input
+      id="clave"
+      type="password"
+      formControlName="clave"
+      autocomplete="new-password"
+    />
+    <small class="error" *ngIf="clave.touched && clave.hasError('required')">
+      La clave es obligatoria.
+    </small>
+    <small class="error" *ngIf="clave.touched && clave.hasError('minlength')">
+      Mínimo 8 caracteres.
+    </small>
+
+    <label for="confirmacion">Repetir clave</label>
+    <input
+      id="confirmacion"
+      type="password"
+      formControlName="confirmacion"
+      autocomplete="new-password"
+    />
+    <small class="error" *ngIf="confirmacion.touched && confirmacion.hasError('required')">
+      Repetí la clave.
+    </small>
+    <small
+      class="error"
+      *ngIf="confirmacion.touched && formulario.hasError('clavesDistintas')"
+    >
+      Las claves no coinciden.
+    </small>
+
+    <p class="error-envio" *ngIf="errorEnvio()" role="alert">
+      {{ errorEnvio() }}
+    </p>
+
+    <button type="submit" [disabled]="guardando()">
+      {{ guardando() ? 'Registrando…' : 'Crear cuenta' }}
+    </button>
+  </form>
+</section>

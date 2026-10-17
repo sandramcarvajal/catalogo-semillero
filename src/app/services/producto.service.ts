@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { catchError, Observable, of } from 'rxjs';
-import { Producto, CrearProducto } from '../models/producto';
+import { Producto, CrearProducto, ActualizarProducto } from '../models/producto';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -40,7 +40,7 @@ export class ProductoService {
 
   actualizar(
     id: number,
-    cambios: Partial<Producto>): Observable<Producto> {
+    cambios: ActualizarProducto): Observable<Producto> {
       return this.http.put<Producto>(
       `${this.apiUrl}/${id}`,
       cambios

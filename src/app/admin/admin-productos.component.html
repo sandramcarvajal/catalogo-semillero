@@ -1,42 +1,38 @@
 <section class="admin-productos">
-  <h2>Administrar productos</h2>
+  <header class="admin-productos-encabezado">
+    <h2>Productos</h2>
+    <a class="btn-nuevo" routerLink="nuevo">Nuevo producto</a>
+  </header>
 
-  <form (submit)="$event.preventDefault(); crear()">
-    <label for="admin-titulo">Título</label>
-    <input
-      id="admin-titulo"
-      type="text"
-      [value]="titulo()"
-      (input)="cambiarTitulo($any($event.target).value)"
-    />
+  <p *ngIf="cargando()">Cargando productos...</p>
 
-    <label for="admin-precio">Precio</label>
-    <input
-      id="admin-precio"
-      type="number"
-      min="0"
-      [value]="precio()"
-      (input)="cambiarPrecio($any($event.target).value)"
-    />
+  <p *ngIf="errorCarga()" class="error" role="alert">{{ errorCarga() }}</p>
 
-    <label for="admin-descripcion">Descripción</label>
-    <textarea
-      id="admin-descripcion"
-      [value]="descripcion()"
-      (input)="cambiarDescripcion($any($event.target).value)"
-    ></textarea>
+  <table *ngIf="!cargando() && productos().length > 0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Título</th>
+        <th>Categoría</th>
+        <th>Precio</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
 
-    <button type="submit" [disabled]="guardando()">
-      {{ guardando() ? 'Creando...' : 'Crear producto' }}
-    </button>
-  </form>
+    <tbody>
+      <tr *ngFor="let producto of productos(); trackBy: trackById">
+        <td>{{ producto.id }}</td>
+        <td>{{ producto.title }}</td>
+        <td>{{ producto.category.name }}</td>
+        <td>${{ producto.price }}</td>
+        <td>
+          <a [routerLink]="[producto.id, 'editar']">Editar</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-  <p
-    class="mensaje"
-    *ngIf="mensaje() as resultado"
-    [class.error]="!resultado.exito"
-    role="status"
-  >
-    {{ resultado.mensaje }}
+  <p *ngIf="!cargando() && productos().length === 0 && !errorCarga()">
+    No hay productos cargados.
   </p>
 </section>
