@@ -99,6 +99,12 @@
       </button>
     </fieldset>
 
-    <button type="submit">Guardar</button>
+    <p class="error-envio" *ngIf="errorEnvio()" role="alert">
+      {{ errorEnvio() }}
+    </p>
+
+    <button type="submit" [disabled]="guardando()">
+      {{ guardando() ? 'Guardando…' : 'Guardar' }}
+    </button>
   </form>
 </section>

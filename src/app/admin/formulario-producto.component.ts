@@ -24,6 +24,8 @@ export class FormularioProductoComponent {
 
   categorias = signal<Categoria[]>([]);
   caracteresRestantes = signal(500);
+  guardando = signal(false);
+  errorEnvio = signal<string | null>(null);
 
   textoContador = computed(() => {
     const restantes = this.caracteresRestantes();
@@ -113,6 +115,9 @@ export class FormularioProductoComponent {
 
     const datos = this.formulario.getRawValue();
 
+    this.guardando.set(true);
+    this.errorEnvio.set(null);
+
     this.productoService
       .crear({
         title: datos.titulo,
@@ -121,8 +126,17 @@ export class FormularioProductoComponent {
         categoryId: datos.categoriaId,
         images: datos.imagenes
       })
-      .subscribe(() => {
-        this.router.navigate(['/admin/productos']);
+      .subscribe({
+        next: () => {
+          this.guardando.set(false);
+          this.router.navigate(['/admin/productos']);
+        },
+        error: () => {
+          this.guardando.set(false);
+          this.errorEnvio.set(
+            'No se pudo guardar el producto. Intentá de nuevo.'
+          );
+        }
       });
   }
 }
