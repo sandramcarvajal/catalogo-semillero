@@ -15,6 +15,7 @@
         <th>Título</th>
         <th>Categoría</th>
         <th>Precio</th>
+        <th>Acciones</th>
       </tr>
     </thead>
 
@@ -24,6 +25,9 @@
         <td>{{ producto.title }}</td>
         <td>{{ producto.category.name }}</td>
         <td>${{ producto.price }}</td>
+        <td>
+          <a [routerLink]="[producto.id, 'editar']">Editar</a>
+        </td>
       </tr>
     </tbody>
   </table>

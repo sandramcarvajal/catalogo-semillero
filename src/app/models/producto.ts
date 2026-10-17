@@ -19,3 +19,12 @@ export interface CrearProducto {
   categoryId: number;
   images: string[];
 }
+
+export interface ActualizarProducto {
+  id?: number;
+  title: string;
+  price: number;
+  description: string;
+  categoryId: number;
+  images: string[];
+}

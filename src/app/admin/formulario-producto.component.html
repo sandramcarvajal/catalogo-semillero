@@ -1,7 +1,12 @@
 <section class="formulario-producto">
-  <h2>Nuevo producto</h2>
+  <h2>{{ esEdicion() ? 'Editar producto' : 'Nuevo producto' }}</h2>
 
   <form [formGroup]="formulario" (ngSubmit)="enviar()">
+    <div class="campo" *ngIf="esEdicion()">
+      <label for="codigo">Código</label>
+      <input id="codigo" type="text" formControlName="codigo" />
+    </div>
+
     <div class="campo">
       <label for="titulo">Título</label>
       <input id="titulo" type="text" formControlName="titulo" />

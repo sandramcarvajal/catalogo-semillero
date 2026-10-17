@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormArray, FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Categoria } from '../models/categoria';
 import { CategoriaService } from '../services/categoria.service';
 import { ProductoService } from '../services/producto.service';
@@ -20,12 +20,16 @@ export class FormularioProductoComponent {
   private productoService = inject(ProductoService);
   private categoriaService = inject(CategoriaService);
   private router = inject(Router);
+  private ruta = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
 
   categorias = signal<Categoria[]>([]);
   caracteresRestantes = signal(500);
   guardando = signal(false);
   errorEnvio = signal<string | null>(null);
+
+  productoId = signal<number | null>(null);
+  esEdicion = computed(() => this.productoId() !== null);
 
   textoContador = computed(() => {
     const restantes = this.caracteresRestantes();
@@ -36,6 +40,9 @@ export class FormularioProductoComponent {
   });
 
   formulario = this.fb.nonNullable.group({
+    // El código es el id del producto: lo mostramos deshabilitado y viaja al
+    // backend con getRawValue(), porque value ignora los campos deshabilitados.
+    codigo: this.fb.nonNullable.control({ value: 0, disabled: true }),
     titulo: [
       '',
       [
@@ -84,10 +91,46 @@ export class FormularioProductoComponent {
       .subscribe((valor) => {
         this.caracteresRestantes.set(500 - valor.length);
       });
+
+    const idParam = this.ruta.snapshot.paramMap.get('id');
+
+    if (idParam !== null) {
+      const id = Number(idParam);
+      this.productoId.set(id);
+      this.cargarProducto(id);
+    }
   }
 
-  private nuevaImagen(): FormControl<string> {
-    return this.fb.nonNullable.control('', [Validators.required]);
+  private cargarProducto(id: number): void {
+    this.productoService.obtenerPorId(id).subscribe({
+      next: (producto) => {
+        this.formulario.patchValue({
+          codigo: producto.id,
+          titulo: producto.title,
+          precio: producto.price,
+          descripcion: producto.description,
+          categoriaId: producto.category.id
+        });
+
+        this.imagenes.clear();
+
+        producto.images.forEach((url) => {
+          this.imagenes.push(this.nuevaImagen(url));
+        });
+
+        // El formulario siempre necesita al menos una fila de imagen.
+        if (producto.images.length === 0) {
+          this.imagenes.push(this.nuevaImagen());
+        }
+      },
+      error: () => {
+        this.errorEnvio.set('No se pudo cargar el producto.');
+      }
+    });
+  }
+
+  private nuevaImagen(url = ''): FormControl<string> {
+    return this.fb.nonNullable.control(url, [Validators.required]);
   }
 
   agregarImagen(): void {
@@ -114,29 +157,39 @@ export class FormularioProductoComponent {
     }
 
     const datos = this.formulario.getRawValue();
+    const id = this.productoId();
 
     this.guardando.set(true);
     this.errorEnvio.set(null);
 
-    this.productoService
-      .crear({
-        title: datos.titulo,
-        price: datos.precio,
-        description: datos.descripcion,
-        categoryId: datos.categoriaId,
-        images: datos.imagenes
-      })
-      .subscribe({
-        next: () => {
-          this.guardando.set(false);
-          this.router.navigate(['/admin/productos']);
-        },
-        error: () => {
-          this.guardando.set(false);
-          this.errorEnvio.set(
-            'No se pudo guardar el producto. Intentá de nuevo.'
-          );
-        }
-      });
+    const peticion$ =
+      id === null
+        ? this.productoService.crear({
+            title: datos.titulo,
+            price: datos.precio,
+            description: datos.descripcion,
+            categoryId: datos.categoriaId,
+            images: datos.imagenes
+          })
+        : this.productoService.actualizar(id, {
+            // getRawValue() incluye el código aunque esté deshabilitado.
+            id: datos.codigo,
+            title: datos.titulo,
+            price: datos.precio,
+            description: datos.descripcion,
+            categoryId: datos.categoriaId,
+            images: datos.imagenes
+          });
+
+    peticion$.subscribe({
+      next: () => {
+        this.guardando.set(false);
+        this.router.navigate(['/admin/productos']);
+      },
+      error: () => {
+        this.guardando.set(false);
+        this.errorEnvio.set('No se pudo guardar el producto. Intentá de nuevo.');
+      }
+    });
   }
 }

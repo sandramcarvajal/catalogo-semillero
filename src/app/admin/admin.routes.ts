@@ -12,6 +12,7 @@ export const ADMIN_ROUTES: Routes = [
       { path: '', redirectTo: 'productos', pathMatch: 'full' },
       { path: 'productos', component: AdminProductosComponent },
       { path: 'productos/nuevo', component: FormularioProductoComponent },
+      { path: 'productos/:id/editar', component: FormularioProductoComponent },
       { path: 'usuarios', component: AdminUsuariosComponent }
     ]
   }
