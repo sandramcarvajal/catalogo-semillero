@@ -2,27 +2,73 @@
   <h2>Nuevo producto</h2>
 
   <form [formGroup]="formulario" (ngSubmit)="enviar()">
-    <label for="titulo">Título</label>
-    <input id="titulo" type="text" formControlName="titulo" />
+    <div class="campo">
+      <label for="titulo">Título</label>
+      <input id="titulo" type="text" formControlName="titulo" />
 
-    <label for="precio">Precio</label>
-    <input id="precio" type="number" formControlName="precio" />
+      <small class="error" *ngIf="titulo.touched && titulo.hasError('required')">
+        El título es obligatorio.
+      </small>
+      <small class="error" *ngIf="titulo.touched && titulo.hasError('minlength')">
+        Mínimo 3 caracteres.
+      </small>
+      <small class="error" *ngIf="titulo.touched && titulo.hasError('maxlength')">
+        Máximo 100 caracteres.
+      </small>
+      <small class="error" *ngIf="titulo.touched && titulo.hasError('soloEspacios')">
+        El título no puede tener solo espacios.
+      </small>
+    </div>
 
-    <label for="descripcion">Descripción</label>
-    <textarea id="descripcion" formControlName="descripcion"></textarea>
+    <div class="campo">
+      <label for="precio">Precio</label>
+      <input id="precio" type="number" formControlName="precio" />
 
-    <label for="categoria">Categoría</label>
-    <select id="categoria" formControlName="categoriaId">
-      <option [ngValue]="0" disabled>Seleccioná una categoría</option>
-      <option *ngFor="let categoria of categorias()" [ngValue]="categoria.id">
-        {{ categoria.name }}
-      </option>
-    </select>
+      <small class="error" *ngIf="precio.touched && precio.hasError('required')">
+        El precio es obligatorio.
+      </small>
+      <small class="error" *ngIf="precio.touched && precio.hasError('min')">
+        El precio debe ser mayor a 0.
+      </small>
+    </div>
+
+    <div class="campo">
+      <label for="descripcion">Descripción</label>
+      <textarea id="descripcion" formControlName="descripcion"></textarea>
+
+      <small class="error" *ngIf="descripcion.touched && descripcion.hasError('required')">
+        La descripción es obligatoria.
+      </small>
+      <small class="error" *ngIf="descripcion.touched && descripcion.hasError('minlength')">
+        Mínimo 20 caracteres.
+      </small>
+      <small class="error" *ngIf="descripcion.touched && descripcion.hasError('maxlength')">
+        Máximo 500 caracteres.
+      </small>
+
+      <small class="contador" [class.exceso]="caracteresRestantes() < 0">
+        {{ textoContador() }}
+      </small>
+    </div>
+
+    <div class="campo">
+      <label for="categoria">Categoría</label>
+      <select id="categoria" formControlName="categoriaId">
+        <option [ngValue]="0" disabled>Seleccioná una categoría</option>
+        <option *ngFor="let categoria of categorias()" [ngValue]="categoria.id">
+          {{ categoria.name }}
+        </option>
+      </select>
+
+      <small class="error" *ngIf="categoriaId.touched && categoriaId.hasError('min')">
+        Seleccioná una categoría.
+      </small>
+    </div>
 
     <fieldset formArrayName="imagenes">
       <legend>Imágenes</legend>
 
-      <div *ngFor="let control of imagenes.controls; let i = index">
+      <div *ngFor="let control of imagenes.controls; let i = index" class="campo">
         <label [attr.for]="'imagen-' + i">Imagen {{ i + 1 }}</label>
 
         <div class="imagen-fila">
@@ -42,6 +88,10 @@
             Quitar
           </button>
         </div>
+
+        <small class="error" *ngIf="control.touched && control.hasError('required')">
+          Ingresá la URL de la imagen.
+        </small>
       </div>
 
       <button type="button" class="btn-secundario" (click)="agregarImagen()">
